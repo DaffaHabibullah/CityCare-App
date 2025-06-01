@@ -10,16 +10,12 @@ export default class Camera {
 
   #takePictureButton;
 
-  addCheeseButtonListener(selector, callback) {
-    this.#takePictureButton = document.querySelector(selector);
-    this.#takePictureButton.onclick = callback;
-  }
-
   static addNewStream(stream) {
     if (!Array.isArray(window.currentStreams)) {
       window.currentStreams = [stream];
       return;
     }
+
     window.currentStreams = [...window.currentStreams, stream];
   }
 
@@ -28,6 +24,7 @@ export default class Camera {
       window.currentStreams = [];
       return;
     }
+
     window.currentStreams.forEach((stream) => {
       if (stream.active) {
         stream.getTracks().forEach((track) => track.stop());
@@ -50,6 +47,7 @@ export default class Camera {
       }
 
       this.#height = (this.#videoElement.videoHeight * this.#width) / this.#videoElement.videoWidth;
+
       this.#canvasElement.setAttribute('width', this.#width);
       this.#canvasElement.setAttribute('height', this.#height);
 
@@ -62,35 +60,19 @@ export default class Camera {
     };
   }
 
-  #clearCanvas() {
-    const context = this.#canvasElement.getContext('2d');
-    context.fillStyle = '#AAAAAA';
-    context.fillRect(0, 0, this.#canvasElement.width, this.#canvasElement.height);
-  }
-
-  async takePicture() {
-    if (!(this.#width && this.#height)) {
-      return null;
-    }
-    const context = this.#canvasElement.getContext('2d');
-    this.#canvasElement.width = this.#width;
-    this.#canvasElement.height = this.#height;
-    context.drawImage(this.#videoElement, 0, 0, this.#width, this.#height);
-    return await new Promise((resolve) => {
-      this.#canvasElement.toBlob((blob) => resolve(blob));
-    });
-  }
-
   async #populateDeviceList(stream) {
     try {
       if (!(stream instanceof MediaStream)) {
         return Promise.reject(Error('MediaStream not found!'));
       }
+
       const { deviceId } = stream.getVideoTracks()[0].getSettings();
+
       const enumeratedDevices = await navigator.mediaDevices.enumerateDevices();
       const list = enumeratedDevices.filter((device) => {
         return device.kind === 'videoinput';
       });
+
       const html = list.reduce((accumulator, device, currentIndex) => {
         return accumulator.concat(`
           <option
@@ -101,6 +83,7 @@ export default class Camera {
           </option>
         `);
       }, '');
+
       this.#selectCameraElement.innerHTML = html;
     } catch (error) {
       console.error('#populateDeviceList: error:', error);
@@ -156,5 +139,33 @@ export default class Camera {
     }
 
     this.#clearCanvas();
+  }
+
+  #clearCanvas() {
+    const context = this.#canvasElement.getContext('2d');
+    context.fillStyle = '#AAAAAA';
+    context.fillRect(0, 0, this.#canvasElement.width, this.#canvasElement.height);
+  }
+
+  async takePicture() {
+    if (!(this.#width && this.#height)) {
+      return null;
+    }
+
+    const context = this.#canvasElement.getContext('2d');
+
+    this.#canvasElement.width = this.#width;
+    this.#canvasElement.height = this.#height;
+
+    context.drawImage(this.#videoElement, 0, 0, this.#width, this.#height);
+
+    return await new Promise((resolve) => {
+      this.#canvasElement.toBlob((blob) => resolve(blob));
+    });
+  }
+
+  addCheeseButtonListener(selector, callback) {
+    this.#takePictureButton = document.querySelector(selector);
+    this.#takePictureButton.onclick = callback;
   }
 }
