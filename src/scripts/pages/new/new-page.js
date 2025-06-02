@@ -3,13 +3,15 @@ import { convertBase64ToBlob } from '../../utils';
 import * as CityCareAPI from '../../data/api';
 import { generateLoaderAbsoluteTemplate } from '../../templates';
 import Camera from '../../utils/camera';
+import Map from '../../utils/map';
 
 export default class NewPage {
-  #presenter;
-  #form;
-  #camera;
+  #presenter = null;
+  #form = null;
+  #camera = null;
   #isCameraOpen = false;
   #takenDocumentations = [];
+  #map = null;
 
   async render() {
     return `
@@ -128,15 +130,15 @@ export default class NewPage {
             </div>
             <div class="form-control">
               <div class="new-form__location__title">Lokasi</div>
-  
+
               <div class="new-form__location__container">
                 <div class="new-form__location__map__container">
                   <div id="map" class="new-form__location__map"></div>
                   <div id="map-loading-container"></div>
                 </div>
                 <div class="new-form__location__lat-lng">
-                  <input type="number" name="latitude" value="-6.175389">
-                  <input type="number" name="longitude" value="106.827139">
+                  <input type="number" name="latitude" value="-6.175389" disabled>
+                  <input type="number" name="longitude" value="106.827139" disabled>
                 </div>
               </div>
             </div>
@@ -213,7 +215,35 @@ export default class NewPage {
   }
 
   async initialMap() {
-    // TODO: map initialization
+    this.#map = await Map.build('#map', {
+      zoom: 15,
+      locate: true,
+    });
+
+    // Preparing marker for select coordinate
+    const centerCoordinate = this.#map.getCenter();
+
+    this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
+
+    const draggableMarker = this.#map.addMarker(
+      [centerCoordinate.latitude, centerCoordinate.longitude],
+      { draggable: 'true' },
+    );
+    draggableMarker.addEventListener('move', (event) => {
+      const coordinate = event.target.getLatLng();
+      this.#updateLatLngInput(coordinate.lat, coordinate.lng);
+    });
+
+    this.#map.addMapEventListener('click', (event) => {
+      draggableMarker.setLatLng(event.latlng);
+
+      // Keep center with user view
+      event.sourceTarget.flyTo(event.latlng);
+    });
+  }
+  #updateLatLngInput(latitude, longitude) {
+    this.#form.elements.namedItem('latitude').value = latitude;
+    this.#form.elements.namedItem('longitude').value = longitude;
   }
 
   #setupCamera() {

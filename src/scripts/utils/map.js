@@ -129,4 +129,16 @@ export default class Map {
     }
     this.#map.setView(latLng(coordinate), zoomLevel);
   }
+
+  getCenter() {
+    const { lat, lng } = this.#map.getCenter();
+    return {
+      latitude: lat,
+      longitude: lng,
+    };
+  }
+
+  addMapEventListener(eventName, callback) {
+    this.#map.addEventListener(eventName, callback);
+  }
 }
