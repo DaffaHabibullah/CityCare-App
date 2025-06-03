@@ -139,6 +139,7 @@ export default class Camera {
     }
 
     this.#clearCanvas();
+    // this.#takePictureButton.onclick = null;
   }
 
   #clearCanvas() {

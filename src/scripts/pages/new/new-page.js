@@ -204,7 +204,7 @@ export default class NewPage {
         if (this.#isCameraOpen) {
           event.currentTarget.textContent = 'Tutup Kamera';
           this.#setupCamera();
-          await this.#camera.launch();
+          this.#camera.launch();
 
           return;
         }
@@ -237,7 +237,7 @@ export default class NewPage {
     this.#map.addMapEventListener('click', (event) => {
       draggableMarker.setLatLng(event.latlng);
 
-      // Keep center with user view
+      // Keep center
       event.sourceTarget.flyTo(event.latlng);
     });
   }

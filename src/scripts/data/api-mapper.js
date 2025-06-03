@@ -5,7 +5,10 @@ export async function reportMapper(report) {
     ...report,
     location: {
       ...report.location,
-      placeName: await Map.getPlaceNameByCoordinate(report.location.latitude, report.location.longitude),
+      placeName: await Map.getPlaceNameByCoordinate(
+        report.location.latitude,
+        report.location.longitude,
+      ),
     },
   };
 }

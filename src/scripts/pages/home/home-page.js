@@ -58,6 +58,7 @@ export default class HomePage {
       return accumulator.concat(
         generateReportItemTemplate({
           ...report,
+          placeNameLocation: report.location.placeName,
           reporterName: report.reporter.name,
         }),
       );

@@ -92,6 +92,23 @@ export default class Map {
     });
   }
 
+  changeCamera(coordinate, zoomLevel = null) {
+    if (!zoomLevel) {
+      this.#map.setView(latLng(coordinate), this.#zoom);
+      return;
+    }
+
+    this.#map.setView(latLng(coordinate), zoomLevel);
+  }
+
+  getCenter() {
+    const { lat, lng } = this.#map.getCenter();
+    return {
+      latitude: lat,
+      longitude: lng,
+    };
+  }
+
   createIcon(options = {}) {
     return icon({
       ...Icon.Default.prototype.options,
@@ -121,21 +138,6 @@ export default class Map {
     }
     newMarker.addTo(this.#map);
     return newMarker;
-  }
-  changeCamera(coordinate, zoomLevel = null) {
-    if (!zoomLevel) {
-      this.#map.setView(latLng(coordinate), this.#zoom);
-      return;
-    }
-    this.#map.setView(latLng(coordinate), zoomLevel);
-  }
-
-  getCenter() {
-    const { lat, lng } = this.#map.getCenter();
-    return {
-      latitude: lat,
-      longitude: lng,
-    };
   }
 
   addMapEventListener(eventName, callback) {

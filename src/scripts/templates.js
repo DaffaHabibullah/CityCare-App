@@ -87,7 +87,7 @@ export function generateReportItemTemplate({
   evidenceImages,
   reporterName,
   createdAt,
-  location,
+  placeNameLocation,
 }) {
   return `
     <div tabindex="0" class="report-item" data-reportid="${id}">
@@ -100,7 +100,7 @@ export function generateReportItemTemplate({
               <i class="fas fa-calendar-alt"></i> ${showFormattedDate(createdAt, 'id-ID')}
             </div>
             <div class="report-item__location">
-              <i class="fas fa-map"></i> ${Object.values(location)}
+              <i class="fas fa-map"></i> ${placeNameLocation}
             </div>
           </div>
         </div>
