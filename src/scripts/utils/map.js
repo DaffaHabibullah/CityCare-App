@@ -61,7 +61,11 @@ export default class Map {
           center: coordinate,
         });
       } catch (error) {
-        console.error('build: error:', error);
+        if (error.code !== undefined && error.code === 1) {
+          console.warn('Geolocation permission denied by user');
+        } else {
+          console.error('build: error:', error);
+        }
 
         return new Map(selector, {
           ...options,
